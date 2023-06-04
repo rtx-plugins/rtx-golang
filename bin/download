@@ -36,13 +36,18 @@ download_golang () {
 
     platform=$(get_platform)
     arch=$(get_arch)
-    download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
+    if [ -n $GOLANG_DOWNLOAD_MIRROR ]; then
+        download_url="$GOLANG_DOWNLOAD_MIRROR/go${version}.${platform}-${arch}.tar.gz"
+    else
+        download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
+    fi
 
     http_code=$(curl -I -w '%{http_code}' -s -o /dev/null "$download_url")
     if [ "$http_code" -eq 404 ] || [ "$http_code" -eq 403 ]; then
         fail "URL: ${download_url} returned status ${http_code}"
     fi
 
+    echo "download_url: $download_url"
     curl "$download_url" -o "${download_path}/archive.tar.gz"
 
     if [ "unset" = "${ASDF_GOLANG_SKIP_CHECKSUM:-unset}" ]; then
