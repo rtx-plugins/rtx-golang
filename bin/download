@@ -36,7 +36,7 @@ download_golang () {
 
     platform=$(get_platform)
     arch=$(get_arch)
-    if [ -n $RTX_GOLANG_DOWNLOAD_MIRROR ]; then
+    if [ -z "${RTX_GOLANG_DOWNLOAD_MIRROR:-}" ]; then
         download_url="$RTX_GOLANG_DOWNLOAD_MIRROR/go${version}.${platform}-${arch}.tar.gz"
     else
         download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
