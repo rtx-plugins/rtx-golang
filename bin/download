@@ -2,6 +2,8 @@
 set -eu
 [ "${BASH_VERSINFO[0]}" -ge 3 ] && set -o pipefail
 
+[ $RTX_TRACE -eq 1] && set -x
+
 PLUGIN_DIR="$(dirname "${BASH_SOURCE[0]}")/.."
 
 # shellcheck source=/dev/null
@@ -34,13 +36,18 @@ download_golang () {
 
     platform=$(get_platform)
     arch=$(get_arch)
-    download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
+    if [ -z "${RTX_GOLANG_DOWNLOAD_MIRROR:-}" ]; then
+        download_url="$RTX_GOLANG_DOWNLOAD_MIRROR/go${version}.${platform}-${arch}.tar.gz"
+    else
+        download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
+    fi
 
     http_code=$(curl -I -w '%{http_code}' -s -o /dev/null "$download_url")
     if [ "$http_code" -eq 404 ] || [ "$http_code" -eq 403 ]; then
         fail "URL: ${download_url} returned status ${http_code}"
     fi
 
+    echo "download_url: $download_url"
     curl "$download_url" -o "${download_path}/archive.tar.gz"
 
     if [ "unset" = "${ASDF_GOLANG_SKIP_CHECKSUM:-unset}" ]; then
