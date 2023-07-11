@@ -2,7 +2,7 @@
 set -eu
 [ "${BASH_VERSINFO[0]}" -ge 3 ] && set -o pipefail
 
-[ $RTX_TRACE -eq 1] && set -x
+[ "${RTX_TRACE:-}" -eq 1 ] && set -x
 
 PLUGIN_DIR="$(dirname "${BASH_SOURCE[0]}")/.."
 
@@ -36,11 +36,7 @@ download_golang () {
 
     platform=$(get_platform)
     arch=$(get_arch)
-    if [ -z "${RTX_GOLANG_DOWNLOAD_MIRROR:-}" ]; then
-        download_url="$RTX_GOLANG_DOWNLOAD_MIRROR/go${version}.${platform}-${arch}.tar.gz"
-    else
-        download_url="https://dl.google.com/go/go${version}.${platform}-${arch}.tar.gz"
-    fi
+    download_url="${RTX_GOLANG_DOWNLOAD_MIRROR:-https://dl.google.com/go}/go${version}.${platform}-${arch}.tar.gz"
 
     http_code=$(curl -I -w '%{http_code}' -s -o /dev/null "$download_url")
     if [ "$http_code" -eq 404 ] || [ "$http_code" -eq 403 ]; then
