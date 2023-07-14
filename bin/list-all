@@ -2,7 +2,7 @@
 set -eu
 [ "${BASH_VERSINFO[0]}" -ge 3 ] && set -o pipefail
 
-git ls-remote --tags ${RTX_GOLANG_REPOSITORY:-https://github.com/golang/go} "go*" \
+git ls-remote --tags "${RTX_GOLANG_REPOSITORY:-https://github.com/golang/go}" "go*" \
   | awk -F/go '{ print $2 }' \
   | uniq \
   | sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n \
